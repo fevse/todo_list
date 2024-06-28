@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -44,14 +45,14 @@ func (s *Storage) ShowList() ([]Task, error) {
 	return data, nil
 }
 
-func (s *Storage) CreateTask(task *Task) error {
+func (s *Storage) CreateTask(title, status string) error {
 	err := s.Connect(context.Background())
 	if err != nil {
 		return fmt.Errorf("cannot create task: %w", err)
 	}
 	defer s.Close(context.Background())
-	_, err = s.db.Exec(`INSERT INTO tasks(id, title, status, created)
-		VALUES($1, $2, $3, $4);`,
-		task.ID, task.Title, task.Status, task.Created)
+	_, err = s.db.Exec(`INSERT INTO tasks(title, status, created)
+		VALUES($1, $2, $3);`,
+		title, status, time.Now())
 	return err
 }
