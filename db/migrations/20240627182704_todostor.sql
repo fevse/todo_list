@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS tasks (
-    id SERIAL PRIMARY KEY,
+    id INTEGER PRIMARY KEY NOT NULL,
     title VARCHAR(255) NOT NULL,
     status VARCHAR(255) NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
