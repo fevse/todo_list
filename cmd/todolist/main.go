@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/fevse/todo_list/internal/app"
 	"github.com/fevse/todo_list/internal/storage"
@@ -34,11 +37,32 @@ func main() {
 	case "create":
 		var t, s string
 		fmt.Println("Add new task")
+		buf := bufio.NewReader(os.Stdin)
 		fmt.Print("Title: ")
-		fmt.Scan(&t)
+		t, err := buf.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		t, _ = strings.CutSuffix(t, "\n")
 		fmt.Print("Status: ")
-		fmt.Scan(&s)
-		err := app.Storage.CreateTask(t, s)
+		s, err = buf.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		s, _ = strings.CutSuffix(s, "\n")
+		err = app.Storage.CreateTask(t, s)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	case "delete":
+		var id int64
+		fmt.Println("Delete task")
+		fmt.Print("ID: ")
+		fmt.Scan(&id)
+		err := app.Storage.DeleteTask(id)
 		if err != nil {
 			fmt.Println(err)
 			return

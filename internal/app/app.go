@@ -8,8 +8,8 @@ type App struct {
 
 type Storage interface {
 	CreateTask(string, string) error
-	// UpdateTask(int, *storage.Task) error
-	// DeleteTask(int) error
+	// UpdateTask(int64, *storage.Task) error
+	DeleteTask(int64) error
 	// ShowTask(int) error
 	ShowList() ([]storage.Task, error)
 }
