@@ -8,9 +8,7 @@ import (
 	"github.com/fevse/todo_list/internal/storage"
 )
 
-var (
-	command string
-)
+var command string
 
 func init() {
 	flag.StringVar(&command, "command", "", "write command to execute")

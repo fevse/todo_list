@@ -6,17 +6,18 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3" // driver
 )
 
 type Storage struct {
-	db *sqlx.DB}
+	db *sqlx.DB
+}
 
 func New() *Storage {
 	return &Storage{}
 }
 
-func (s *Storage) Connect(_ context.Context) (err error ){
+func (s *Storage) Connect(_ context.Context) (err error) {
 	s.db, err = sqlx.Connect("sqlite3", "todotasks.db")
 	if err != nil {
 		return fmt.Errorf("connection db error: %w", err)
