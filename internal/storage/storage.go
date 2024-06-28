@@ -57,3 +57,13 @@ func (s *Storage) CreateTask(title, status string) error {
 		title, status, time.Now())
 	return err
 }
+
+func (s *Storage) DeleteTask(id int64) error {
+	err := s.Connect(context.Background())
+	if err != nil {
+		return fmt.Errorf("cannot delete task: %w", err)
+	}
+	defer s.Close(context.Background())
+	_, err = s.db.Exec(`DELETE FROM tasks WHERE id=$1`, id)
+	return err
+}
