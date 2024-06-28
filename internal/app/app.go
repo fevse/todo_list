@@ -7,7 +7,7 @@ type App struct {
 }
 
 type Storage interface {
-	CreateTask(*storage.Task) error
+	CreateTask(string, string) error
 	// UpdateTask(int, *storage.Task) error
 	// DeleteTask(int) error
 	// ShowTask(int) error
