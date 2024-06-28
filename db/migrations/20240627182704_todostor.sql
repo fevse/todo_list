@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE IF NOT EXISTS todotasks (
+CREATE TABLE IF NOT EXISTS tasks (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     status VARCHAR(255) NOT NULL,
@@ -10,5 +10,5 @@ CREATE TABLE IF NOT EXISTS todotasks (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF NOT EXISTS todotasks;
+DROP TABLE IF EXISTS tasks;
 -- +goose StatementEnd
