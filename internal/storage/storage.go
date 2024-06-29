@@ -46,6 +46,23 @@ func (s *Storage) ShowList() ([]Task, error) {
 	return data, nil
 }
 
+func (s *Storage) ShowTask(id int64) (Task, error) {
+	data := make([]Task, 0)
+	err := s.Connect(context.Background())
+	if err != nil {
+		return Task{}, fmt.Errorf("cannot show tasks: %w", err)
+	}
+	defer s.Close(context.Background())
+	err = s.db.Select(&data, `SELECT * FROM tasks WHERE id=$1`, id)
+	if err != nil {
+		return Task{}, fmt.Errorf("cannot select tasks from db: %w", err)
+	}
+	if len(data) != 1 {
+		return Task{}, fmt.Errorf("error select")
+	}
+	return data[0], nil
+}
+
 func (s *Storage) CreateTask(title, status string) error {
 	err := s.Connect(context.Background())
 	if err != nil {

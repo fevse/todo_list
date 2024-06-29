@@ -34,6 +34,17 @@ func main() {
 		for _, t := range tasks {
 			fmt.Printf("#%d %s - %s: %v\n", t.ID, t.Title, t.Status, t.Created.Format("02.01.2006 15:04:05"))
 		}
+	case "task":
+		var id int64
+		fmt.Println("Show task")
+		fmt.Print("ID: ")
+		fmt.Scan(&id)
+		t, err := app.Storage.ShowTask(id)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Printf("#%d %s - %s: %v\n", t.ID, t.Title, t.Status, t.Created.Format("02.01.2006 15:04:05"))
 	case "create":
 		var t, s string
 		fmt.Println("Add new task")

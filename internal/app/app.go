@@ -10,7 +10,7 @@ type Storage interface {
 	CreateTask(string, string) error
 	// UpdateTask(int64, *storage.Task) error
 	DeleteTask(int64) error
-	// ShowTask(int) error
+	ShowTask(int64) (storage.Task, error)
 	ShowList() ([]storage.Task, error)
 }
 
