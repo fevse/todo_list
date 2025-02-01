@@ -9,7 +9,8 @@ import (
 	"github.com/fevse/todo_list/internal/app"
 )
 
-func Cli(command string, app app.App) {
+func Cli(app app.App) {
+	var command string
 	for {
 		fmt.Scan(&command)
 		switch command {

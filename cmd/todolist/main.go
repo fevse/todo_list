@@ -16,6 +16,5 @@ func main() {
 	storage := storage.New()
 	app := app.New(storage)
 	app.Storage.Migrate("db/migrations")
-	var command string
-	cli.Cli(command, *app)
+	cli.Cli(*app)
 }
