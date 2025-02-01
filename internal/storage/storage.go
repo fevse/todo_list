@@ -5,21 +5,35 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/fevse/todo_list/internal/config"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3" // driver
 	"github.com/pressly/goose"
 )
 
 type Storage struct {
-	db *sqlx.DB
+	conf config.Config
+	db   *sqlx.DB
 }
 
-func New() *Storage {
-	return &Storage{}
+func New(conf config.Config) *Storage {
+	return &Storage{conf: conf}
+}
+
+func (s *Storage) Migrate() error {
+	s.Connect(context.Background())
+	defer s.Close(context.Background())
+	if err := goose.SetDialect(s.conf.DB.Name); err != nil {
+		return fmt.Errorf("migration, set dialect error: %w", err)
+	}
+	if err := goose.Up(s.db.DB, s.conf.DB.Dir); err != nil {
+		return fmt.Errorf("migration up error: %w", err)
+	}
+	return nil
 }
 
 func (s *Storage) Connect(_ context.Context) (err error) {
-	s.db, err = sqlx.Connect("sqlite3", "todotasks.db")
+	s.db, err = sqlx.Connect(s.conf.DB.Name, "todotasks.db")
 	if err != nil {
 		return fmt.Errorf("connection db error: %w", err)
 	}
@@ -84,16 +98,4 @@ func (s *Storage) DeleteTask(id int64) error {
 	defer s.Close(context.Background())
 	_, err = s.db.Exec(`DELETE FROM tasks WHERE id=$1`, id)
 	return err
-}
-
-func (s *Storage) Migrate(dir string) error {
-	s.Connect(context.Background())
-	defer s.Close(context.Background())
-	if err := goose.SetDialect("sqlite3"); err != nil {
-		return fmt.Errorf("migration, set dialect error: %w", err)
-	}
-	if err := goose.Up(s.db.DB, dir); err != nil {
-		return fmt.Errorf("migration up error: %w", err)
-	}
-	return nil
 }
