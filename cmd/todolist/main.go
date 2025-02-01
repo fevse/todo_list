@@ -89,6 +89,5 @@ func main() {
 		default:
 			fmt.Println("wrong command, use e.g list, task, create, delete, exit")
 		}
-
 	}
 }
