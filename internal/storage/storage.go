@@ -7,6 +7,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3" // driver
+	"github.com/pressly/goose"
 )
 
 type Storage struct {
@@ -83,4 +84,16 @@ func (s *Storage) DeleteTask(id int64) error {
 	defer s.Close(context.Background())
 	_, err = s.db.Exec(`DELETE FROM tasks WHERE id=$1`, id)
 	return err
+}
+
+func (s *Storage) Migrate(dir string) error {
+	s.Connect(context.Background())
+	defer s.Close(context.Background())
+	if err := goose.SetDialect("sqlite3"); err != nil {
+		return fmt.Errorf("migration, set dialect error: %w", err)
+	}
+	if err := goose.Up(s.db.DB, dir); err != nil {
+		return fmt.Errorf("migration up error: %w", err)
+	}
+	return nil
 }
