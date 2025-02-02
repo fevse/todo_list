@@ -7,12 +7,18 @@ import (
 )
 
 type Config struct {
-	DB DBConf
+	DB         DBConf
+	HTTPServer HTTPConf
 }
 
 type DBConf struct {
 	Dir  string
 	Name string
+}
+
+type HTTPConf struct {
+	Host string
+	Port string
 }
 
 func NewConfig() (c Config, err error) {

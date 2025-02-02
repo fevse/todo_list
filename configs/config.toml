@@ -1,3 +1,7 @@
 [db]
 name = "sqlite3"
 dir = "db/migrations"
+
+[httpserver]
+host = "localhost"
+port = "8080"
