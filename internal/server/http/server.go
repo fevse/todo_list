@@ -45,7 +45,7 @@ func (s *Server) Stop(ctx context.Context) error {
 }
 
 func (s *Server) index() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
 		_, err := w.Write([]byte("*** TO-DO List ***\n"))
 		if err != nil {
 			fmt.Println(err)
