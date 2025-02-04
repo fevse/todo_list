@@ -2,7 +2,6 @@ package httpserver
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -27,14 +26,9 @@ func NewServer(app *app.App, host, port string) *Server {
 }
 
 func (s *Server) Start(ctx context.Context) error {
-	mux := http.NewServeMux()
-
-	mux.Handle("GET /", s.index())
-	// mux.Handle("GET /list/", s.ShowList())
-	fmt.Println("server is running " + s.Server.Addr)
-	if err := s.Server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-		return fmt.Errorf("server error: %w", err)
-	}
+	m := http.NewServeMux()
+	m.Handle("GET /", s.index())
+	http.ListenAndServe(s.Server.Addr, m)
 
 	<-ctx.Done()
 	return nil
@@ -45,10 +39,13 @@ func (s *Server) Stop(ctx context.Context) error {
 }
 
 func (s *Server) index() http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
-		_, err := w.Write([]byte("*** TO-DO List ***\n"))
-		if err != nil {
-			fmt.Println(err)
-		}
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Hello")
 	}
 }
+
+// func h(name string) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Fprintf(w, "%s: Вы вызвали %s методом %s\n", name, r.URL.String(), r.Method)
+// 	}
+// }
