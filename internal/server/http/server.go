@@ -28,7 +28,11 @@ func NewServer(app *app.App, host, port string) *Server {
 func (s *Server) Start(ctx context.Context) error {
 	m := http.NewServeMux()
 	m.Handle("GET /", s.index())
-	http.ListenAndServe(s.Server.Addr, m)
+	s.Server.Handler = m
+	err := s.Server.ListenAndServe()
+	if err != nil {
+		return err
+	}
 
 	<-ctx.Done()
 	return nil
@@ -40,12 +44,9 @@ func (s *Server) Stop(ctx context.Context) error {
 
 func (s *Server) index() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Hello")
+		_, err := w.Write([]byte("Hello, user!\n"))
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
-
-// func h(name string) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		fmt.Fprintf(w, "%s: Вы вызвали %s методом %s\n", name, r.URL.String(), r.Method)
-// 	}
-// }

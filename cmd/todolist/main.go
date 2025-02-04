@@ -49,7 +49,8 @@ func main() {
 
 	go func() {
 		defer wg.Done()
-		if err := httpserver.Start(ctx); err != nil {
+		err := httpserver.Start(ctx)
+		if err != nil {
 			fmt.Println(err)
 			cancel()
 			os.Exit(1)
@@ -60,7 +61,7 @@ func main() {
 		defer wg.Done()
 		cli.Cli(*app)
 	}()
-
+	fmt.Println("This is fine")
 	<-ctx.Done()
 	wg.Wait()
 }
