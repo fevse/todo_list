@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/fevse/todo_list/internal/app"
@@ -29,6 +30,7 @@ func (s *Server) Start(ctx context.Context) error {
 	m := http.NewServeMux()
 	m.Handle("GET /", s.index())
 	m.Handle("GET /list", s.ShowList())
+	m.Handle("GET /list/{id}", s.ShowTask())
 	s.Server.Handler = m
 	err := s.Server.ListenAndServe()
 	if err != nil {
@@ -53,12 +55,12 @@ func (s *Server) index() http.HandlerFunc {
 }
 
 func (s *Server) ShowList() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
 		list, err := s.App.Storage.ShowList()
 		if err != nil {
 			fmt.Println(err)
 		}
-		_, err = w.Write([]byte("List:\n"))
+		_, err = w.Write([]byte("Tasks:\n"))
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -68,6 +70,25 @@ func (s *Server) ShowList() http.HandlerFunc {
 			if err != nil {
 				fmt.Println(err)
 			}
+		}
+	}
+}
+
+func (s *Server) ShowTask() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idString := r.PathValue("id")
+		id, err := strconv.Atoi(idString)
+		if err != nil {
+			fmt.Println(err)
+		}
+		t, err := s.App.Storage.ShowTask(id)
+		if err != nil {
+			fmt.Println(err)
+		}
+		task := fmt.Sprintf("#%d %s - %s: %v\n", t.ID, t.Title, t.Status, t.Created.Format("02.01.2006 15:04:05"))
+		_, err = w.Write([]byte(task))
+		if err != nil {
+			fmt.Println(err)
 		}
 	}
 }
