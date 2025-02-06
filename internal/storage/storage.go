@@ -61,7 +61,7 @@ func (s *Storage) ShowList() ([]Task, error) {
 	return data, nil
 }
 
-func (s *Storage) ShowTask(id int64) (Task, error) {
+func (s *Storage) ShowTask(id int) (Task, error) {
 	data := make([]Task, 0)
 	err := s.Connect(context.Background())
 	if err != nil {
@@ -90,7 +90,7 @@ func (s *Storage) CreateTask(title, status string) error {
 	return err
 }
 
-func (s *Storage) DeleteTask(id int64) error {
+func (s *Storage) DeleteTask(id int) error {
 	err := s.Connect(context.Background())
 	if err != nil {
 		return fmt.Errorf("cannot delete task: %w", err)

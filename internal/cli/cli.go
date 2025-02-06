@@ -43,7 +43,7 @@ func list(app app.App) {
 }
 
 func task(app app.App) {
-	var id int64
+	var id int
 	fmt.Println("Show task")
 	fmt.Print("ID: ")
 	fmt.Scan(&id)
@@ -82,7 +82,7 @@ func create(app app.App) {
 }
 
 func del(app app.App) {
-	var id int64
+	var id int
 	fmt.Println("Delete task")
 	fmt.Print("ID: ")
 	fmt.Scan(&id)
