@@ -28,6 +28,7 @@ func NewServer(app *app.App, host, port string) *Server {
 func (s *Server) Start(ctx context.Context) error {
 	m := http.NewServeMux()
 	m.Handle("GET /", s.index())
+	m.Handle("GET /list", s.ShowList())
 	s.Server.Handler = m
 	err := s.Server.ListenAndServe()
 	if err != nil {
@@ -47,6 +48,26 @@ func (s *Server) index() http.HandlerFunc {
 		_, err := w.Write([]byte("Hello, user!\n"))
 		if err != nil {
 			fmt.Println(err)
+		}
+	}
+}
+
+func (s *Server) ShowList() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		list, err := s.App.Storage.ShowList()
+		if err != nil {
+			fmt.Println(err)
+		}
+		_, err = w.Write([]byte("List:\n"))
+		if err != nil {
+			fmt.Println(err)
+		}
+		for _, t := range list {
+			task := fmt.Sprintf("#%d %s - %s: %v\n", t.ID, t.Title, t.Status, t.Created.Format("02.01.2006 15:04:05"))
+			_, err = w.Write([]byte(task))
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	}
 }
