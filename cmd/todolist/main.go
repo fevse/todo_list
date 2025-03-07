@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"sync"
@@ -11,7 +12,6 @@ import (
 	"time"
 
 	"github.com/fevse/todo_list/internal/app"
-	"github.com/fevse/todo_list/internal/cli"
 	"github.com/fevse/todo_list/internal/config"
 	httpserver "github.com/fevse/todo_list/internal/server/http"
 	"github.com/fevse/todo_list/internal/storage"
@@ -22,12 +22,20 @@ func main() {
 	fmt.Println("***TODO LIST***")
 	conf, err := config.NewConfig()
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatal(err)
 	}
 	storage := storage.New(conf)
+	err = storage.Connect()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer storage.Close()
+
+	err = storage.Migrate()
+	if err != nil {
+		log.Fatal(err)
+	}
 	app := app.New(storage)
-	app.Storage.Migrate()
 	httpserver := httpserver.NewServer(app, conf.HTTPServer.Host, conf.HTTPServer.Port)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
@@ -45,7 +53,7 @@ func main() {
 	}()
 
 	wg := sync.WaitGroup{}
-	wg.Add(2)
+	wg.Add(1)
 
 	go func() {
 		defer wg.Done()
@@ -57,10 +65,10 @@ func main() {
 		}
 	}()
 
-	go func() {
-		defer wg.Done()
-		cli.Cli(*app)
-	}()
+	// go func() {
+	// 	defer wg.Done()
+	// 	cli.Cli(*app)
+	// }()
 	fmt.Println("This is fine")
 	<-ctx.Done()
 	wg.Wait()
