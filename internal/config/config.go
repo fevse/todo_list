@@ -24,7 +24,7 @@ type HTTPConf struct {
 func NewConfig() (c Config, err error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
-	viper.AddConfigPath("./configs/")
+	viper.AddConfigPath(".")
 	err = viper.ReadInConfig()
 	if err != nil {
 		return Config{}, err
