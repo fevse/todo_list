@@ -65,10 +65,6 @@ func main() {
 		}
 	}()
 
-	// go func() {
-	// 	defer wg.Done()
-	// 	cli.Cli(*app)
-	// }()
 	fmt.Println("This is fine")
 	<-ctx.Done()
 	wg.Wait()
