@@ -4,6 +4,7 @@
 
 ## Реализовано:
 * [x] REST API
+* [x] Telegram bot
 * [x] хранилище (SQLite)
 * [x] настроен GitHub Actions
 * [x] развертывание в Docker при помощи docker-compose - **make run**

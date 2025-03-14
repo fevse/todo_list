@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/fevse/todo_list/internal/app"
+	"github.com/fevse/todo_list/internal/bot"
 	"github.com/fevse/todo_list/internal/config"
 	httpserver "github.com/fevse/todo_list/internal/server/http"
 	"github.com/fevse/todo_list/internal/storage"
@@ -48,12 +49,12 @@ func main() {
 		defer cancel()
 
 		if err := httpserver.Stop(ctx); err != nil {
-			fmt.Println(err)
+			log.Print(err)
 		}
 	}()
 
 	wg := sync.WaitGroup{}
-	wg.Add(1)
+	wg.Add(2)
 
 	go func() {
 		defer wg.Done()
@@ -63,6 +64,10 @@ func main() {
 			cancel()
 			os.Exit(1)
 		}
+	}()
+
+	go func() {
+		bot.Start(app, conf)
 	}()
 
 	fmt.Println("This is fine")

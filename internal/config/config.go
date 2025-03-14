@@ -1,14 +1,13 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/spf13/viper"
 )
 
 type Config struct {
 	DB         DBConf
 	HTTPServer HTTPConf
+	TgBot      TBotConf
 }
 
 type DBConf struct {
@@ -21,6 +20,10 @@ type HTTPConf struct {
 	Port string
 }
 
+type TBotConf struct {
+	Token string
+}
+
 func NewConfig() (c Config, err error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
@@ -30,6 +33,5 @@ func NewConfig() (c Config, err error) {
 		return Config{}, err
 	}
 	viper.Unmarshal(&c)
-	fmt.Println(c)
 	return
 }
