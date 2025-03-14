@@ -14,6 +14,7 @@ run:
 
 down:
 	docker-compose down
+	docker rmi todo_list-app
 
 test:
 	go test -race -v ./...

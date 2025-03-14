@@ -12,7 +12,6 @@ import (
 
 	"github.com/fevse/todo_list/internal/app"
 	"github.com/fevse/todo_list/internal/storage"
-	"github.com/google/uuid"
 )
 
 type Server struct {
@@ -68,8 +67,6 @@ func (s *Server) CreateTask() http.HandlerFunc {
 		}
 		var task storage.Task
 		json.Unmarshal(body, &task)
-		task.Created = time.Now()
-		task.ID = int64(uuid.New().ID())
 		if err = s.App.Storage.CreateTask(task.Title, task.Status); err != nil {
 			fmt.Println(err)
 		}
