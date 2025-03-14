@@ -7,4 +7,4 @@ host = "0.0.0.0"
 port = "7777"
 
 [tgbot]
-token = "6322398681:AAHcGnFbl62xvQtAeWUSnJ4h3Jz3JgpRfZ0"
+token = ""
