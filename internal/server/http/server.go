@@ -2,13 +2,17 @@ package httpserver
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/fevse/todo_list/internal/app"
+	"github.com/fevse/todo_list/internal/storage"
+	"github.com/google/uuid"
 )
 
 type Server struct {
@@ -29,8 +33,10 @@ func NewServer(app *app.App, host, port string) *Server {
 func (s *Server) Start(ctx context.Context) error {
 	m := http.NewServeMux()
 	m.Handle("GET /", s.index())
-	m.Handle("GET /list", s.ShowList())
-	m.Handle("GET /list/{id}", s.ShowTask())
+	m.Handle("GET /tasks", s.ShowList())
+	m.Handle("GET /tasks/{id}", s.ShowTask())
+	m.Handle("POST /tasks", s.CreateTask())
+	m.Handle("DELETE /tasks/{id}", s.DeleteTask())
 	s.Server.Handler = m
 	err := s.Server.ListenAndServe()
 	if err != nil {
@@ -48,6 +54,45 @@ func (s *Server) Stop(ctx context.Context) error {
 func (s *Server) index() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		_, err := w.Write([]byte("Hello, user!\n"))
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func (s *Server) CreateTask() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			fmt.Println(err)
+		}
+		var task storage.Task
+		json.Unmarshal(body, &task)
+		task.Created = time.Now()
+		task.ID = int64(uuid.New().ID())
+		if err = s.App.Storage.CreateTask(task.Title, task.Status); err != nil {
+			fmt.Println(err)
+		}
+		_, err = w.Write([]byte("Task " + task.Title + " created successfully"))
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func (s *Server) DeleteTask() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idString := r.PathValue("id")
+		id, err := strconv.Atoi(idString)
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = s.App.Storage.DeleteTask(id)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		_, err = w.Write([]byte("Task " + strconv.Itoa(id) + " successfully deleted"))
 		if err != nil {
 			fmt.Println(err)
 		}
