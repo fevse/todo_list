@@ -6,4 +6,4 @@
 * [x] REST API
 * [x] хранилище (SQLite)
 * [x] настроен GitHub Actions
-* [x] развертывание в Docker при помощи docker-compose
+* [x] развертывание в Docker при помощи docker-compose - **make run**
