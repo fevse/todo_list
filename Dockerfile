@@ -22,6 +22,7 @@ WORKDIR /root
 
 COPY --from=builder /app/todolist .
 COPY --from=builder /app/configs/config.toml .
+COPY --from=builder /app/.env .
 COPY --from=builder /app/db/migrations/20240627182704_todostor.sql .
 
 CMD ["./todolist"]
