@@ -8,12 +8,11 @@ import (
 	"strconv"
 
 	"github.com/fevse/todo_list/internal/app"
-	"github.com/fevse/todo_list/internal/config"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 )
 
-func Start(s *app.App, t config.Config) {
+func Start(s *app.App, t string) {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
@@ -21,7 +20,7 @@ func Start(s *app.App, t config.Config) {
 		bot.WithDefaultHandler(ShowTask(s)),
 	}
 
-	b, err := bot.New(t.TgBot.Token, opts...)
+	b, err := bot.New(t, opts...)
 	if err != nil {
 		panic(err)
 	}
