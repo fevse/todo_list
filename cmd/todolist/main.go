@@ -56,13 +56,6 @@ func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 
-	// err = godotenv.Load()
-	// if err != nil {
-	// 	log.Print("Error loading .env file")
-	// }
-
-	// token := os.Getenv("TOKEN")
-
 	go func() {
 		defer wg.Done()
 		err := httpserver.Start(ctx)
@@ -74,6 +67,7 @@ func main() {
 	}()
 
 	go func() {
+		defer wg.Done()
 		bot.Start(app, conf.TgBot.Token)
 	}()
 
