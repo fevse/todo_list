@@ -2,13 +2,14 @@ FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-ENV CGO_ENABLED=1
+ENV CGO_ENABLED=0
+ENV GOOS=linux
 
-RUN apk add --no-cache \
-    # Important: required for go-sqlite3
-    gcc \
-    # Required for Alpine
-    musl-dev
+# RUN apk add --no-cache \
+#     # Important: required for go-sqlite3
+#     gcc \
+#     # Required for Alpine
+#     musl-dev
 
 COPY go.mod .
 COPY . .

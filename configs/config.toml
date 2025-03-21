@@ -1,5 +1,10 @@
 [db]
-name = "sqlite3"
+type = "postgresql"
+host = "postgres"
+port = "5432"
+user = "postgres"
+password = "postgres"
+name = "postgres"
 dir = "."
 
 [httpserver]

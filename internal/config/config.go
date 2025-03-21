@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/spf13/viper"
 )
 
@@ -11,8 +13,13 @@ type Config struct {
 }
 
 type DBConf struct {
-	Dir  string
-	Name string
+	Type     string
+	Dir      string
+	Host     string
+	Port     string
+	User     string
+	Password string
+	Name     string
 }
 
 type HTTPConf struct {
@@ -56,4 +63,9 @@ func NewTBotConf() (t TBotConf, err error) {
 		return TBotConf{}, err
 	}
 	return
+}
+
+func (c *Config) DBConnectionString() string {
+	return fmt.Sprintf("%v://%v:%v@%v:%v/%v?sslmode=disable",
+		c.DB.Type, c.DB.User, c.DB.Password, c.DB.Host, c.DB.Port, c.DB.Name)
 }

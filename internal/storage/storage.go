@@ -2,11 +2,12 @@ package storage
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/fevse/todo_list/internal/config"
+	_ "github.com/jackc/pgx/stdlib" // driver
 	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3" // driver
 	"github.com/pressly/goose"
 )
 
@@ -20,7 +21,7 @@ func New(conf config.Config) *Storage {
 }
 
 func (s *Storage) Migrate() error {
-	if err := goose.SetDialect(s.conf.DB.Name); err != nil {
+	if err := goose.SetDialect("postgres"); err != nil {
 		return fmt.Errorf("migration, set dialect error: %w", err)
 	}
 	if err := goose.Up(s.db.DB, s.conf.DB.Dir); err != nil {
@@ -30,8 +31,11 @@ func (s *Storage) Migrate() error {
 }
 
 func (s *Storage) Connect() (err error) {
-	s.db, err = sqlx.Connect(s.conf.DB.Name, "todotasks.db")
+	dsn := s.conf.DBConnectionString()
+
+	s.db, err = sqlx.Connect("pgx", dsn)
 	if err != nil {
+		log.Print(dsn)
 		return fmt.Errorf("connection db error: %w", err)
 	}
 	return nil
