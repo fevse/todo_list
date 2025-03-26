@@ -59,7 +59,6 @@ func (s *Server) index() http.HandlerFunc {
 		}
 		s.App.Logger.Logger.Info("handler index, method " + r.Method)
 	}
-
 }
 
 func (s *Server) CreateTask() http.HandlerFunc {
