@@ -2,7 +2,6 @@ package storage
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/fevse/todo_list/internal/config"
@@ -35,7 +34,6 @@ func (s *Storage) Connect() (err error) {
 
 	s.db, err = sqlx.Connect("pgx", dsn)
 	if err != nil {
-		log.Print(dsn)
 		return fmt.Errorf("connection db error: %w", err)
 	}
 	return nil
@@ -73,10 +71,16 @@ func (s *Storage) CreateTask(title, status string) error {
 	_, err := s.db.Exec(`INSERT INTO tasks(title, status, created)
 		VALUES($1, $2, $3);`,
 		title, status, time.Now())
-	return err
+	if err != nil {
+		return fmt.Errorf("cannot create task: %w", err)
+	}
+	return nil
 }
 
 func (s *Storage) DeleteTask(id int) error {
 	_, err := s.db.Exec(`DELETE FROM tasks WHERE id=$1`, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("cannot delete task %d: %w", id, err)
+	}
+	return nil
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -14,29 +13,32 @@ import (
 	"github.com/fevse/todo_list/internal/app"
 	"github.com/fevse/todo_list/internal/bot"
 	"github.com/fevse/todo_list/internal/config"
+	"github.com/fevse/todo_list/internal/logger"
 	httpserver "github.com/fevse/todo_list/internal/server/http"
 	"github.com/fevse/todo_list/internal/storage"
 )
 
 func main() {
 	flag.Parse()
-	fmt.Println("***TODO LIST***")
 	conf, err := config.NewConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	logger := logger.NewLogger()
+
 	storage := storage.New(conf)
 	err = storage.Connect()
 	if err != nil {
-		log.Fatal(err)
+		logger.Logger.Error(err.Error())
 	}
 	defer storage.Close()
 
 	err = storage.Migrate()
 	if err != nil {
-		log.Fatal(err)
+		logger.Logger.Error(err.Error())
 	}
-	app := app.New(storage)
+	app := app.New(storage, logger)
 	httpserver := httpserver.NewServer(app, conf.HTTPServer.Host, conf.HTTPServer.Port)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
@@ -49,7 +51,7 @@ func main() {
 		defer cancel()
 
 		if err := httpserver.Stop(ctx); err != nil {
-			log.Print(err)
+			logger.Logger.Error(err.Error())
 		}
 	}()
 
@@ -60,7 +62,7 @@ func main() {
 		defer wg.Done()
 		err := httpserver.Start(ctx)
 		if err != nil {
-			fmt.Println(err)
+			logger.Logger.Error(err.Error())
 			cancel()
 			os.Exit(1)
 		}
@@ -71,7 +73,7 @@ func main() {
 		bot.Start(app, conf.TgBot.Token)
 	}()
 
-	fmt.Println("This is fine")
+	logger.Logger.Info("TODO LIST successfully started")
 	<-ctx.Done()
 	wg.Wait()
 }

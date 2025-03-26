@@ -1,9 +1,13 @@
 package app
 
-import "github.com/fevse/todo_list/internal/storage"
+import (
+	"github.com/fevse/todo_list/internal/logger"
+	"github.com/fevse/todo_list/internal/storage"
+)
 
 type App struct {
 	Storage Storage
+	Logger  *logger.Logger
 }
 
 type Storage interface {
@@ -15,6 +19,9 @@ type Storage interface {
 	Migrate() error
 }
 
-func New(s Storage) *App {
-	return &App{Storage: s}
+func New(s Storage, l *logger.Logger) *App {
+	return &App{
+		Storage: s,
+		Logger:  l,
+	}
 }

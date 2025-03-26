@@ -41,39 +41,43 @@ func (s *Server) Start(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
+	s.App.Logger.Logger.Info("server started %v" + s.Server.Addr)
 	<-ctx.Done()
 	return nil
 }
 
 func (s *Server) Stop(ctx context.Context) error {
+	s.App.Logger.Logger.Info("server stopped")
 	return s.Server.Shutdown(ctx)
 }
 
 func (s *Server) index() http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte("Hello, user!\n"))
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
+		s.App.Logger.Logger.Info("handler index, method " + r.Method)
 	}
+
 }
 
 func (s *Server) CreateTask() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
 		var task storage.Task
 		json.Unmarshal(body, &task)
 		if err = s.App.Storage.CreateTask(task.Title, task.Status); err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
 		_, err = w.Write([]byte("Task " + task.Title + " created successfully"))
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
+		s.App.Logger.Logger.Info("Task " + task.Title + " created")
 	}
 }
 
@@ -82,37 +86,39 @@ func (s *Server) DeleteTask() http.HandlerFunc {
 		idString := r.PathValue("id")
 		id, err := strconv.Atoi(idString)
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
 		err = s.App.Storage.DeleteTask(id)
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
 
 		_, err = w.Write([]byte("Task " + strconv.Itoa(id) + " successfully deleted"))
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
+		s.App.Logger.Logger.Info("Task #" + strconv.Itoa(id) + " deleted")
 	}
 }
 
 func (s *Server) ShowList() http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		list, err := s.App.Storage.ShowList()
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
 		_, err = w.Write([]byte("Tasks:\n"))
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
 		for _, t := range list {
 			task := fmt.Sprintf("#%d %s - %s: %v\n", t.ID, t.Title, t.Status, t.Created.Format("02.01.2006 15:04:05"))
 			_, err = w.Write([]byte(task))
 			if err != nil {
-				fmt.Println(err)
+				s.App.Logger.Logger.Error(err.Error())
 			}
 		}
+		s.App.Logger.Logger.Info("handler ShowList, method " + r.Method)
 	}
 }
 
@@ -121,16 +127,17 @@ func (s *Server) ShowTask() http.HandlerFunc {
 		idString := r.PathValue("id")
 		id, err := strconv.Atoi(idString)
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
 		t, err := s.App.Storage.ShowTask(id)
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
 		task := fmt.Sprintf("#%d %s - %s: %v\n", t.ID, t.Title, t.Status, t.Created.Format("02.01.2006 15:04:05"))
 		_, err = w.Write([]byte(task))
 		if err != nil {
-			fmt.Println(err)
+			s.App.Logger.Logger.Error(err.Error())
 		}
+		s.App.Logger.Logger.Info("handler ShowTask, method " + r.Method)
 	}
 }
