@@ -102,7 +102,25 @@ func (s *Server) DeleteTask() http.HandlerFunc {
 
 func (s *Server) ShowList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		list, err := s.App.Storage.ShowList()
+		filter := make(map[string]string)
+		var limit, offset int
+		for k, v := range r.URL.Query() {
+			if k != "limit" && k != "offset" {
+				filter[k] = v[0]
+			}
+		}
+		limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+		if err != nil {
+			s.App.Logger.Logger.Error(err.Error())
+			limit = -1
+		}
+		offset, err = strconv.Atoi(r.URL.Query().Get("offset"))
+		if err != nil {
+			s.App.Logger.Logger.Error(err.Error())
+			offset = 0
+		}
+
+		list, err := s.App.Storage.ShowList(filter, limit, offset)
 		if err != nil {
 			s.App.Logger.Logger.Error(err.Error())
 		}

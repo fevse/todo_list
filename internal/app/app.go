@@ -15,7 +15,7 @@ type Storage interface {
 	// UpdateTask(int64, *storage.Task) error
 	DeleteTask(int) error
 	ShowTask(int) (storage.Task, error)
-	ShowList() ([]storage.Task, error)
+	ShowList(map[string]string, int, int) ([]storage.Task, error)
 	Migrate() error
 }
 

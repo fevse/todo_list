@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/fevse/todo_list/internal/config"
@@ -46,9 +47,26 @@ func (s *Storage) Close() error {
 	return fmt.Errorf("db is not open")
 }
 
-func (s *Storage) ShowList() ([]Task, error) {
+func (s *Storage) ShowList(filter map[string]string, limit, offset int) ([]Task, error) {
+	query := `SELECT * FROM tasks WHERE 1=1`
+	args := []any{}
+	counter := 1
+
+	for k, v := range filter {
+		query += " AND " + k + " = $" + strconv.Itoa(counter)
+		args = append(args, v)
+		counter++
+	}
+	if limit >= 0 {
+		query += " LIMIT $" + strconv.Itoa(counter)
+		counter++
+		args = append(args, limit)
+	}
+	query += " OFFSET $" + strconv.Itoa(counter)
+	args = append(args, offset)
+
 	data := make([]Task, 0)
-	err := s.db.Select(&data, `SELECT * FROM tasks`)
+	err := s.db.Select(&data, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot select tasks from db: %w", err)
 	}
