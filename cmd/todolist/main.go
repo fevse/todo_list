@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/fevse/todo_list/internal/app"
-	"github.com/fevse/todo_list/internal/bot"
 	"github.com/fevse/todo_list/internal/config"
 	"github.com/fevse/todo_list/internal/logger"
 	httpserver "github.com/fevse/todo_list/internal/server/http"
@@ -32,7 +31,12 @@ func main() {
 	if err != nil {
 		logger.Logger.Error(err.Error())
 	}
-	defer storage.Close()
+	defer func() {
+		err = storage.Close()
+		if err != nil {
+			logger.Logger.Error(err.Error())
+		}
+	}()
 
 	err = storage.Migrate()
 	if err != nil {
@@ -56,7 +60,7 @@ func main() {
 	}()
 
 	wg := sync.WaitGroup{}
-	wg.Add(2)
+	wg.Add(1)
 
 	go func() {
 		defer wg.Done()
@@ -66,11 +70,6 @@ func main() {
 			cancel()
 			os.Exit(1)
 		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		bot.Start(app, conf.TgBot.Token)
 	}()
 
 	logger.Logger.Info("TODO LIST successfully started")

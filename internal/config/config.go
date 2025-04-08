@@ -9,7 +9,6 @@ import (
 type Config struct {
 	DB         DBConf
 	HTTPServer HTTPConf
-	TgBot      TBotConf
 }
 
 type DBConf struct {
@@ -27,10 +26,6 @@ type HTTPConf struct {
 	Port string
 }
 
-type TBotConf struct {
-	Token string
-}
-
 func NewConfig() (c Config, err error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
@@ -43,25 +38,7 @@ func NewConfig() (c Config, err error) {
 	if err != nil {
 		return Config{}, err
 	}
-	t, err := NewTBotConf()
-	if err != nil {
-		return Config{}, err
-	}
-	c.TgBot = t
 
-	return
-}
-
-func NewTBotConf() (t TBotConf, err error) {
-	viper.SetConfigFile(".env")
-	err = viper.ReadInConfig()
-	if err != nil {
-		return TBotConf{}, err
-	}
-	err = viper.Unmarshal(&t)
-	if err != nil {
-		return TBotConf{}, err
-	}
 	return
 }
 

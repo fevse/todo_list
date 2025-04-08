@@ -68,7 +68,9 @@ func (s *Server) CreateTask() http.HandlerFunc {
 			s.App.Logger.Logger.Error(err.Error())
 		}
 		var task storage.Task
-		json.Unmarshal(body, &task)
+		if err = json.Unmarshal(body, &task); err != nil {
+			s.App.Logger.Logger.Error(err.Error())
+		}
 		if err = s.App.Storage.CreateTask(task.Title, task.Status); err != nil {
 			s.App.Logger.Logger.Error(err.Error())
 		}
