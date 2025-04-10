@@ -5,12 +5,6 @@ WORKDIR /app
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 
-# RUN apk add --no-cache \
-#     # Important: required for go-sqlite3
-#     gcc \
-#     # Required for Alpine
-#     musl-dev
-
 COPY go.mod .
 COPY . .
 
