@@ -35,7 +35,6 @@ require (
 )
 
 require (
-	github.com/go-telegram/bot v1.14.0
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/viper v1.19.0
